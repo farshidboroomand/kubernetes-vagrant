@@ -1,0 +1,16 @@
+---
+- name: Configure iptables to receive bridged network traffic
+  template:
+    src: kubernetes-cri.conf.j2
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: Load settings from all system configuration files
+  command: sysctl --system
+
+- name: Load bridge-netfilter module
+  command: modprobe br_netfilter
+
+- name: Setup bridge-netfilter module
+  template:
+    src: br_netfilter.conf.j2
+    dest: /etc/modules-load.d/br_netfilter.conf

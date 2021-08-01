@@ -1,0 +1,24 @@
+---
+- name: Remove apt lock file
+  file:
+    path: "/var/lib/dpkg/lock-frontend"
+    state: absent
+  become: true
+  tags: apt
+
+- name: Preliminary installation
+  apt:
+    name:
+      - apt-transport-https
+      - aufs-tools
+      - bash-completion
+      - ca-certificates
+      - curl
+      - dnsutils
+      - gnupg-agent
+      - python-apt
+      - software-properties-common
+      - vim
+    update_cache: yes
+    state: present
+  tags: apt

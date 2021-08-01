@@ -1,0 +1,43 @@
+---
+- hosts: all
+  become: no
+
+- hosts: cluster:localhost
+  roles:
+    - role: defaults
+      tags: network
+    - role: bootstrap
+      tags: bootstrap
+
+- hosts: cluster
+  roles:
+    - role: kubernetes/preinstall
+      tags: preinstall
+    - role: docker
+      tags: docker
+    - role: kubernetes/kubelet
+      tags: kubelet
+    - role: kubernetes/kubeadm
+      tags: kubeadm
+
+- hosts: cluster:localhost
+  roles:
+    - role: cleanup
+      tags: bootstrap
+
+- hosts: master
+  roles:
+    - role: kubernetes/master/kubectl
+      tags: kubectl
+    - role: kubernetes/master/kubeadm
+      tags: kubeadm
+    - role: kubernetes/master/cluster
+      gather_facts: false
+      tags: cluster-init
+    - role: kubernetes/addons
+      tags: addons
+
+- hosts: workers
+  roles:
+    - role: kubernetes/workers/cluster
+      tags: cluster-join
